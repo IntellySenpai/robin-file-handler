@@ -34,20 +34,75 @@ Ensure you have Python 3.6 or later installed. You can download Python from [pyt
 
 1. Run the script to start the Robin session setup:
    ```bash
-   python start.py
+   python robin.py start
    ```
 
-2. The script will:
-   - Check if the keyfile already exists. If it does, it will skip the keyfile creation step.
+Robin will:
+   - Check if an active session (keyfile) already exists. If it does, it will abort new keyfile creation.
    - Prompt the user for a password, ensuring it meets security standards (e.g., minimum length, uppercase, lowercase, digit, and special character).
    - Generate a TOTP key and provide the user with the option to scan a QR code for OTP setup.
    - Log all actions to `robin.log`.
+
+
+3. Use Robin to encrypt a file
+   ```bash
+   python robin.py encrypt file.txt
+   ```
+Robin will:
+   - Prompt the user for a password and TOTP and validate authentication and create master key.
+   - Encrypt the file with the master key and create new `file.txt.robin` extension.
+   - Log all actions to `robin.log` and history file.
+
+3. Use Robin to decrypt a file
+   ```bash
+   python robin.py encrypt file.txt.robin
+   ```
+Robin will:
+   - Prompt the user for a password and TOTP and validate authentication and create master key.
+   - Validate that the file contains `.robin` extension.
+   - Check HMAC for tampering or any changes to the file.
+   - If file integrity is passed Robin will decrypt the file with the master key and recreate the original `file.txt` file.
+   - Log all actions to `robin.log` and history file.
+
+
+4. Use Robin to securely delete a file
+   ```bash
+   python robin.py delete file.txt
+   ```
+Robin will:
+   - Prompt the user for a password and TOTP and validate authentication and create master key.
+   - Will use randomizer to overwrite the file and then securely delete it from the disk
+   - Log all actions to `robin.log` and history file.
+
+
+5. Use Robin to display user actions history
+   ```bash
+   python robin.py history
+   ```
+Robin will:
+   - Prompt the user for a password and create master key.
+   - Decrypt and display the history of actions
+   - Log all actions to `robin.log` and history file.
+
+
+6. Use Robin to destroy session
+   ```bash
+   python robin.py destroy
+   ```
+Robin will:
+   - Confirm action requested.
+   - Prompt the user for a password and TOTP to validate authentication.
+   - Delete the keyfile, history file and TOTP secret.
+   - Log all actions to `robin.log` and history file.
+
 
 ## Logging
 
 All log messages are written to `robin.log`. The log format includes a timestamp, log level, and the message itself, making it easy to track actions performed by the script.
 
 Log messages are also printed to the console for immediate feedback during execution.
+
+There is also `.robin/history.robin` that contains user actions history. This file is encrypted and can be read using 'history' argument.
 
 ## Requirements
 
@@ -62,10 +117,6 @@ These dependencies can be installed using the `requirements.txt` file:
 ```bash
 pip install -r requirements.txt
 ```
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Contributing
 
